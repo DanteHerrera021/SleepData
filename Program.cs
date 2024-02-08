@@ -45,5 +45,34 @@ if (resp == "1")
 else if (resp == "2")
 {
     // TODO: parse data file
+    if (File.Exists(file))
+    {
 
+        int total = 0;
+        int avg = 0;
+
+        StreamReader sr = new StreamReader(file);
+        while (!sr.EndOfStream)
+        {
+            string line = sr.ReadLine();
+
+            // Found Here: https://stackoverflow.com/questions/1905850/how-do-i-convert-a-short-date-string-back-to-a-datetime-object
+            // DateTime date = DateTime.ParseExact("12/15/2009", "MM/dd/yyyy", null);
+            DateTime date = DateTime.ParseExact(line.Substring(0, line.IndexOf(",")), "M/dd/yyyy", null);
+
+            // Format Week Headers
+            Console.WriteLine($"Week of {date:MMM}, {date:dd}, {date:yyyy}");
+
+            // Format Day Headers
+            Console.WriteLine($"{"Su",3} {"Mo",3} {"Tu",3} {"We",3} {"Th",3} {"Fr",3}  {"Sa",3} {"Tot",3} {"Avg",3}");
+            Console.WriteLine($"{"--",3} {"--",3} {"--",3} {"--",3} {"--",3} {"--",3}  {"--",3} {"---",3} {"---",3}");
+
+
+        }
+        sr.Close();
+    }
+    else
+    {
+        Console.WriteLine("File does not exist");
+    }
 }
