@@ -4,6 +4,7 @@ Console.WriteLine("Enter 2 to parse data.");
 Console.WriteLine("Enter anything else to quit.");
 // input response
 string? resp = Console.ReadLine();
+string file = "data.txt";
 
 if (resp == "1")
 {
@@ -48,26 +49,57 @@ else if (resp == "2")
     if (File.Exists(file))
     {
 
-        int total = 0;
-        int avg = 0;
+
 
         StreamReader sr = new StreamReader(file);
         while (!sr.EndOfStream)
         {
             string line = sr.ReadLine();
 
+            int total = 0;
+            decimal avg = 0;
+
+
             // Found Here: https://stackoverflow.com/questions/1905850/how-do-i-convert-a-short-date-string-back-to-a-datetime-object
             // DateTime date = DateTime.ParseExact("12/15/2009", "MM/dd/yyyy", null);
-            DateTime date = DateTime.ParseExact(line.Substring(0, line.IndexOf(",")), "M/dd/yyyy", null);
+            DateTime date = DateTime.ParseExact(line.Substring(0, line.IndexOf(",")), "M/d/yyyy", null);
 
             // Format Week Headers
             Console.WriteLine($"Week of {date:MMM}, {date:dd}, {date:yyyy}");
 
             // Format Day Headers
-            Console.WriteLine($"{"Su",3} {"Mo",3} {"Tu",3} {"We",3} {"Th",3} {"Fr",3}  {"Sa",3} {"Tot",3} {"Avg",3}");
-            Console.WriteLine($"{"--",3} {"--",3} {"--",3} {"--",3} {"--",3} {"--",3}  {"--",3} {"---",3} {"---",3}");
+            Console.WriteLine($"{"Su",3} {"Mo",3} {"Tu",3} {"We",3} {"Th",3} {"Fr",3} {"Sa",3} {"Tot",3} {"Avg",3}");
+            Console.WriteLine($"{"--",3} {"--",3} {"--",3} {"--",3} {"--",3} {"--",3} {"--",3} {"---",3} {"---",3}");
 
+            string[] hourArr;
+            int commaIndex = line.IndexOf(',');
+            if (commaIndex != -1)
+            {
+                string substringAfterComma = line.Substring(commaIndex + 1);
+                hourArr = substringAfterComma.Split('|');
+            }
+            else
+            {
+                // Handle case where ',' is not found in the line
+                hourArr = line.Split('|');
+            }
 
+            // Because there are 2 extra columns in the table for tot and avg, run until count is over hourArr + 2
+            // Make a temporary variable for count and string
+            int count = 0;
+            string str = "";
+
+            while (count < hourArr.Length)
+            {
+                //https://stackoverflow.com/questions/1019793/how-can-i-convert-string-to-int
+                total += int.Parse(hourArr[count]);
+                count += 1;
+            }
+
+            avg = total / (decimal)count;
+
+            Console.WriteLine($"{hourArr[0],3} {hourArr[1],3} {hourArr[2],3} {hourArr[3],3} {hourArr[4],3} {hourArr[5],3} {hourArr[6],3} {total,3} {Math.Round(avg, 1),3}");
+            Console.WriteLine();
         }
         sr.Close();
     }
